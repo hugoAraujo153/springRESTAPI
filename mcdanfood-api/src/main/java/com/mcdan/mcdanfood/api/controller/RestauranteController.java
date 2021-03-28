@@ -68,14 +68,20 @@ public class RestauranteController {
     public ResponseEntity<?> atualizar(@PathVariable Long restauranteId,
         @RequestBody Restaurante restaurante) {
         try {
+        	System.out.println(restaurante.toString());
 			Optional<Restaurante> restauranteAtual = restauranteRepository.findById(restauranteId);
 			
-			if (restauranteAtual.isPresent()) {
-				BeanUtils.copyProperties(restaurante, restauranteAtual, "id");
+			System.out.println(restauranteAtual.toString());
+			//copia todas as propriedades
+			if (restauranteAtual.isPresent()) { //Parece que o copyProperties nao está a funcionar
+				BeanUtils.copyProperties(restaurante, restauranteAtual, 
+				/*Excepto*/		"id", "formasPagamento", "endereco", "dataCadastro", "produtos");
 				
+
+				System.out.println(restauranteAtual.toString());
 				cadastroRestauranteService.salvar(restauranteAtual.get());
 				
-				return ResponseEntity.ok(restaurante);
+				return ResponseEntity.ok(restauranteAtual.get());
 			}
 			
 			return ResponseEntity.notFound().build(); 
