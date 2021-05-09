@@ -2,13 +2,14 @@ package com.mcdan.mcdanfood.domain.model;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import lombok.Data;
 
 @Data
-@Embeddable //classe que pode ser incorporada noutra
+@Embeddable
 public class Endereco {
 
 	@Column(name = "endereco_cep")
@@ -26,7 +27,8 @@ public class Endereco {
 	@Column(name = "endereco_bairro")
 	private String bairro;
 	
-	@ManyToOne
-	@JoinColumn(name = "cidade_id")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "endereco_cidade_id")
 	private Cidade cidade;
+	
 }

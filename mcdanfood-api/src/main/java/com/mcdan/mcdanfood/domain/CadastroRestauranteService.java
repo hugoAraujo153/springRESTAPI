@@ -1,22 +1,19 @@
 package com.mcdan.mcdanfood.domain;
 
-import java.util.List;
-import java.util.Optional;
-
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.mcdan.mcdanfood.domain.exception.EntidadeNaoEncontradaException;
+import com.mcdan.mcdanfood.domain.exception.RestauranteNaoEncontradoException;
 import com.mcdan.mcdanfood.domain.model.Cozinha;
 import com.mcdan.mcdanfood.domain.model.Restaurante;
-import com.mcdan.mcdanfood.domain.repository.CozinhaRepository;
 import com.mcdan.mcdanfood.domain.repository.RestauranteRepository;
 
 @Service
 public class CadastroRestauranteService {
 
 	@Autowired
-	private CozinhaRepository cozinhaRepository;
+	private CadastroCozinhaService cozinhaService;
 	
 	@Autowired
 	private RestauranteRepository restauranteRepository;
@@ -24,15 +21,24 @@ public class CadastroRestauranteService {
 
 	
 	public Restaurante salvar(Restaurante restaurante) {
-		Long cozinhaId = restaurante.getCozinha().getId();
 		
-		Cozinha cozinha = cozinhaRepository.findById(cozinhaId).orElseThrow(
-				()->new EntidadeNaoEncontradaException(String.format("Não existe cadastro de cozinha com código %d", cozinhaId)));
-	
+		Cozinha cozinhaAlterada = restaurante.getCozinha();
 		
-		restaurante.setCozinha(cozinha);
+		if(cozinhaAlterada != null) {
+
+			Cozinha cozinha = cozinhaService.buscaOuFalha(cozinhaAlterada.getId());
+			BeanUtils.copyProperties(cozinhaAlterada, cozinha);
+			
+			restaurante.setCozinha(cozinha);
+		}
 		
 		return restauranteRepository.save(restaurante);
+		
+	}
+	
+	public Restaurante buscaOuFalha(Long restauranteId) {
+		return restauranteRepository.findById(restauranteId)
+			.orElseThrow(() -> new RestauranteNaoEncontradoException( restauranteId));
 	}
 	
 	//TODO:Implementar

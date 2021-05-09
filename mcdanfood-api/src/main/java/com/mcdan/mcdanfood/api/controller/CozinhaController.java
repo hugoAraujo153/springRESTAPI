@@ -44,16 +44,22 @@ public class CozinhaController {
 	}
 	
 	
+//	@GetMapping("/{cozinhaId}")
+//	public ResponseEntity<Cozinha> buscar(@PathVariable("cozinhaId") long id) {
+//		
+//		Optional<Cozinha> cozinha = cozinhaRepository.findById(id);
+//		
+//		if(cozinha.isPresent()) {
+//			return ResponseEntity.ok(cozinha.get());
+//		}
+//		
+//		return ResponseEntity.notFound().build();
+//	}
+	
 	@GetMapping("/{cozinhaId}")
-	public ResponseEntity<Cozinha> buscar(@PathVariable("cozinhaId") long id) {
-		
-		Optional<Cozinha> cozinha = cozinhaRepository.findById(id);
-		
-		if(cozinha.isPresent()) {
-			return ResponseEntity.ok(cozinha.get());
-		}
-		
-		return ResponseEntity.notFound().build();
+	@ResponseStatus(HttpStatus.OK)
+	public Cozinha buscar(@PathVariable("cozinhaId") long id) {
+		return cadastroCozinhaService.buscaOuFalha(id);
 	}
 	
 	@PostMapping
@@ -62,38 +68,57 @@ public class CozinhaController {
 		return cadastroCozinhaService.salvar(cozinha); 
 	}
 	
-	@PutMapping("/{cozinhaId}")
-	public ResponseEntity<Cozinha> atualizar(@PathVariable("cozinhaId") long id, @RequestBody Cozinha cozinha) {
 	
-		Optional<Cozinha> cozinhaAtual = cozinhaRepository.findById(id);
+	@PutMapping("/{cozinhaId}")
+	public Cozinha atualizar(@PathVariable("cozinhaId") long id, @RequestBody Cozinha cozinha) {
+	
+		Cozinha cozinhaAtual = cadastroCozinhaService.buscaOuFalha(id);
+	
+		//copia as propriedades que vêm no pedido para o objecto
+		BeanUtils.copyProperties(cozinha, cozinhaAtual,"id");
 		
-		if(cozinhaAtual.isPresent()) {
-			//copia as propriedades que vêm no pedido para o objecto
-			BeanUtils.copyProperties(cozinha, cozinhaAtual,"id");
-			
-			cadastroCozinhaService.salvar(cozinhaAtual.get());
-			
-			return ResponseEntity.ok(cozinhaAtual.get()); 
-		}
+		return cadastroCozinhaService.salvar(cozinhaAtual);
 		
-		return ResponseEntity.notFound().build();
 		
 	}
+//	@PutMapping("/{cozinhaId}")
+//	public ResponseEntity<Cozinha> atualizar(@PathVariable("cozinhaId") long id, @RequestBody Cozinha cozinha) {
+//	
+//		Optional<Cozinha> cozinhaAtual = cozinhaRepository.findById(id);
+//		
+//		if(cozinhaAtual.isPresent()) {
+//			//copia as propriedades que vêm no pedido para o objecto
+//			BeanUtils.copyProperties(cozinha, cozinhaAtual,"id");
+//			
+//			cadastroCozinhaService.salvar(cozinhaAtual.get());
+//			
+//			return ResponseEntity.ok(cozinhaAtual.get()); 
+//		}
+//		
+//		return ResponseEntity.notFound().build();
+//		
+//	}
+	
+//	@DeleteMapping("/{cozinhaId}")
+//	public ResponseEntity<?> remover (@PathVariable("cozinhaId") long id){
+//
+//		try {
+//			
+//			cadastroCozinhaService.excluir(id);
+//			return ResponseEntity.noContent().build();
+//			
+//		}catch (EntidadeNaoEncontradaException ex) {
+//			return ResponseEntity.notFound().build();
+//		}
+//		catch (EntidadeEmUsoException ex) {
+//			return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+//		}
+//	}
 	
 	@DeleteMapping("/{cozinhaId}")
-	public ResponseEntity<Cozinha> remover (@PathVariable("cozinhaId") long id){
-
-		try {
-			
+	@ResponseStatus(HttpStatus.NO_CONTENT)  
+	public void remover (@PathVariable("cozinhaId") long id){
 			cadastroCozinhaService.excluir(id);
-			return ResponseEntity.noContent().build();
-			
-		}catch (EntidadeNaoEncontradaException ex) {
-			return ResponseEntity.notFound().build();
-		}
-		catch (EntidadeEmUsoException ex) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).build();
-		}
 	}
 	
 }

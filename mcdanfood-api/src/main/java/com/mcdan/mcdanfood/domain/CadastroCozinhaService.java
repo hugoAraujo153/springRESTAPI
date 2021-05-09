@@ -1,20 +1,20 @@
 package com.mcdan.mcdanfood.domain;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.mcdan.mcdanfood.domain.exception.CozinhaNaoEncontradaException;
 import com.mcdan.mcdanfood.domain.exception.EntidadeEmUsoException;
-import com.mcdan.mcdanfood.domain.exception.EntidadeNaoEncontradaException;
 import com.mcdan.mcdanfood.domain.model.Cozinha;
 import com.mcdan.mcdanfood.domain.repository.CozinhaRepository;
 
 @Service
 public class CadastroCozinhaService {
 
+	private static final String MSG_COZINHA_EM_USO = "A cozinha com o id %d encontra-se em uso";
+	
 	@Autowired
 	CozinhaRepository cozinhaRepository;
 	
@@ -30,12 +30,17 @@ public class CadastroCozinhaService {
 			cozinhaRepository.deleteById(id);
 			
 		}catch(EmptyResultDataAccessException ex) {
-			throw new EntidadeNaoEncontradaException(String.format(" Não existe cadastro de cozinha com código %d", id));
+			throw new CozinhaNaoEncontradaException(id);
 		}catch (DataIntegrityViolationException ex) {
 			
-			 throw new EntidadeEmUsoException(String.format("A cozinha com o id %d encontra-se em uso", id));
+			 throw new EntidadeEmUsoException(String.format(MSG_COZINHA_EM_USO, id));
 		
 		}
 	}
 
+	public Cozinha buscaOuFalha(Long cozinhaId) {
+		return cozinhaRepository.findById(cozinhaId)
+				.orElseThrow(()->
+					new CozinhaNaoEncontradaException(cozinhaId));
+	}
 }

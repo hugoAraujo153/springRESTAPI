@@ -1,5 +1,6 @@
 package com.mcdan.mcdanfood.domain.model;
 
+
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
@@ -17,12 +18,12 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 public class Produto {
-	
+
 	@EqualsAndHashCode.Include
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@Column(nullable = false)
 	private String nome;
 	
@@ -33,9 +34,10 @@ public class Produto {
 	private BigDecimal preco;
 	
 	@Column(nullable = false)
-	private boolean ativo;
-	
+	private Boolean ativo;
+
 	@ManyToOne
-	@JoinColumn(nullable = false)	
+	@JoinColumn(nullable = false)
 	private Restaurante restaurante;
+
 }
