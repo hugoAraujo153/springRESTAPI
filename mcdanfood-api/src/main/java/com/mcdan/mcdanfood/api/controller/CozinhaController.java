@@ -3,6 +3,8 @@ package com.mcdan.mcdanfood.api.controller;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -70,7 +72,7 @@ public class CozinhaController {
 	
 	
 	@PutMapping("/{cozinhaId}")
-	public Cozinha atualizar(@PathVariable("cozinhaId") long id, @RequestBody Cozinha cozinha) {
+	public Cozinha atualizar(@PathVariable("cozinhaId") long id, @RequestBody @Valid Cozinha cozinha) {
 	
 		Cozinha cozinhaAtual = cadastroCozinhaService.buscaOuFalha(id);
 	
